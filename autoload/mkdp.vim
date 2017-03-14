@@ -44,6 +44,7 @@ exec s:py_cmd . 'cwd = vim.eval("expand(\"<sfile>:p:h\")")'
 exec s:py_cmd . 'sys.path.insert(0,cwd)'
 exec s:py_cmd . 'from server import send'
 exec s:py_cmd . 'import base64'
+exec s:py_cmd . 'import time'
 
 fun! mkdp#browserStart() abort "open browser and save the buffer number
     if !has_key(g:mkdp_bufs, bufnr('%'))
@@ -68,9 +69,11 @@ fun! mkdp#markdownRefresh() abort  "refresh the markdown preview
             call s:markdownRefresh()
         catch /.*/
             call mkdp#serverStart()
+            call s:markdownRefresh()
         endtry
     elseif g:mkdp_auto_open
         call mkdp#browserStart()
+        call s:markdownRefresh()
     endif
 endfun
 
@@ -128,6 +131,9 @@ fun! s:browserStart() abort "function for opening the browser
     else
         call system(g:mkdp_path_to_chrome . " \"http://127.0.0.1:" . g:mkdp_port . "/markdown/" . g:mkdp_prefix . bufnr('%') . '?' . g:mkdp_cwd . "\" &>/dev/null &")
     endif
+
+    exec s:py_cmd . "time.sleep(1)"
+    exec s:py_cmd . "send.markdownRefresh()"
 endfun
 
 fun! s:browserClose() abort "function for closing the browser
@@ -149,7 +155,9 @@ fu! s:autocmd() abort
             au BufLeave <buffer> call mkdp#browserClose()
         endif
         au VimLeave * call mkdp#serverClose()
-        if g:mkdp_refresh_slow
+        if g:mkdp_refresh_on_save
+          au BufWrite <buffer> call mkdp#markdownRefresh()
+        elseif g:mkdp_refresh_slow
           au CursorHold,BufWrite,InsertLeave <buffer> call mkdp#markdownRefresh()
         else
           au CursorHold,CursorHoldI,CursorMoved,CursorMovedI <buffer> call mkdp#markdownRefresh()

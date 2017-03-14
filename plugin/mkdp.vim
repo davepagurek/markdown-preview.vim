@@ -35,6 +35,10 @@ if !exists('g:mkdp_auto_close')
     let g:mkdp_auto_close = 1
 endif
 
+if !exists('g:mkdp_refresh_on_save')
+    let g:mkdp_refresh_on_save = 0
+endif
+
 if !exists('g:mkdp_refresh_slow')
     let g:mkdp_refresh_slow = 0
 endif

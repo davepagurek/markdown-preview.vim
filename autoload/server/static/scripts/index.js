@@ -256,12 +256,15 @@
             }
             mkdContainer.innerHTML = content;
             aPoint = document.getElementById(options.rFlagSign);
-            if(aPoint) {
+
+            window.MathJax && MathJax.Hub.Queue(
+              ["Typeset",MathJax.Hub],
+              [function() {
+                if (!aPoint) return;
                 TweenLite.to(body, 0.4, {scrollTop: aPoint.offsetTop - TOTOPHEIGHT, ease:Power2.easeOut});
                 TweenLite.to(html, 0.4, {scrollTop: aPoint.offsetTop - TOTOPHEIGHT, ease:Power2.easeOut});
-            }
-
-            window.MathJax && MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+              }]
+            );
         });
     }
 
