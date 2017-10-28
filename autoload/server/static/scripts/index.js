@@ -40,7 +40,7 @@
         var slash = getSlash();
         var bases = Base64.decode(base.slice(1)).split('&')[0].split(slash).slice(0, -1);
         var paths = path.split(slash);
-        if(/^https?:?/i.test(paths[0])) {
+        if(/^https?:?/i.test(paths[0]) || /^\/DIYURL?.*$/.test(path)) {
             return path;
         } else if(/^$|^[a-zA-Z]:.*$/.test(paths[0])) {
             return '/DIYURL?' + Base64.encode(path);
@@ -256,12 +256,15 @@
             }
             mkdContainer.innerHTML = content;
             aPoint = document.getElementById(options.rFlagSign);
-            if(aPoint) {
+
+            window.MathJax && MathJax.Hub.Queue(
+              ["Typeset",MathJax.Hub],
+              [function() {
+                if (!aPoint) return;
                 TweenLite.to(body, 0.4, {scrollTop: aPoint.offsetTop - TOTOPHEIGHT, ease:Power2.easeOut});
                 TweenLite.to(html, 0.4, {scrollTop: aPoint.offsetTop - TOTOPHEIGHT, ease:Power2.easeOut});
-            }
-
-            window.MathJax && MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+              }]
+            );
         });
     }
 
